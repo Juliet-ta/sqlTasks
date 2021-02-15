@@ -1,18 +1,32 @@
-//Створення таблиці
+// Універсальне відношення
+n SMALLINT UNSIGNED NOT NULL,
+cod SMALLINT UNSIGNED NOT NULL RIMARY KEY,
+new SET('Yes', 'No'),
+title VARCHAR(100) NOT NULL,
+price FLOAT UNSIGNED NOT NULL,
+pub VARCHAR(30) NOT NULL,
+page SMALLINT UNSIGNED NOT NULL,
+form VARCHAR(10),
+dat DATE NOT NULL,
+tir SMALLINT UNSIGNED NOT NULL,
+them VARCHAR(30) NOT NULL,
+kat VARCHAR(30) NOT NULL
+
+// Створення таблиці
 DROP DATABASE IF EXISTS library;
 CREATE DATABASE IF NOT EXISTS library;
 CREATE TABLE books
 (
-    n SMALLINT UNSIGNED NOT NULL PRIMARY KEY,
-    cod SMALLINT UNSIGNED NOT NULL UNIQUE,
-    new SET('Yes', 'No'),
+    n SMALLINT UNSIGNED NOT NULL,
+    cod SMALLINT UNSIGNED NOT NULL PRIMARY KEY,
+    new SET('Yes', 'No'),	//new CHAR(3) CHECK (new IN ('Yes', 'No'))
     title VARCHAR(100) NOT NULL,
     price FLOAT UNSIGNED NOT NULL,
     pub VARCHAR(30) NOT NULL,
     page SMALLINT UNSIGNED NOT NULL,
     form VARCHAR(10),
     dat DATE NOT NULL,
-    tir SMALLINT UNSIGNED NOT NULL,
+    tir SMALLINT DEFAULT 5000,
     them VARCHAR(30) NOT NULL,
     kat VARCHAR(30) NOT NULL
 )ENGINE = INNODB;
@@ -62,8 +76,6 @@ UPDATE library.books
         	ELSE '70х100/16'
 	END;
 UPDATE library.books
-	SET tir = 5000;
-UPDATE library.books
 	SET them =
 	CASE
 	    	WHEN cod = 5217 OR cod = 4829 OR cod = 5170 OR cod = 860 OR cod = 44 OR cod = 5176 THEN 'Операційні системи'
@@ -83,3 +95,17 @@ UPDATE library.books
 		WHEN cod = 5462 OR cod = 4982 OR cod = 4687 THEN 'C&C++'
     		ELSE 'Підручники'
     	END;
+CREATE INDEX idx_title ON library.books (title);
+CREATE INDEX idx_cod ON library.books (cod);
+
+// Додавання в таблицю нового текстового поля "Автор", розміром 15 символів
+ALTER TABLE library.books ADD author VARCHAR(15);
+// Збільшення розміру текстового поля "Автор" до 20 символів
+ALTER TABLE library.books MODIFY COLUMN author VARCHAR(20);
+// Видалення текстового поля "Автор" з таблиці
+ALTER TABLE library.books DROP COLUMN author;
+// Зміна порядку сортування індексу і призначення його унікальності
+ORDER BY `n` DESC;
+ALTER TABLE library.books MODIFY COLUMN `n` SMALLINT(5) UNSIGNED UNIQUE;
+// Видалення індексу
+ALTER TABLE library.books DROP COLUMN `n`;
