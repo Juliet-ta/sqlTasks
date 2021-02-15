@@ -42,24 +42,24 @@ UPDATE library.books
 	SET pub =
 	CASE
     		WHEN cod = 5110 OR cod = 860 THEN 'BHV С.-Петербург'
-	      WHEN cod = 4985 OR cod = 5141 THEN 'Вильямс'
-        WHEN cod = 5127 THEN 'Питер'
-	      WHEN cod = 5199 THEN 'МикроАрт'
-        WHEN cod = 3851 OR cod = 44 OR cod = 5462 OR cod = 4982 THEN 'DiaSoft'
-	      WHEN cod = 3932 OR cod = 4713 OR cod = 5170 OR cod = 4687 THEN 'ДМК'
-        WHEN cod = 5217 THEN 'Триумф'
-	      WHEN cod = 4829 THEN 'Эком'
-        WHEN cod = 5176 THEN 'Русская редакция'
+		WHEN cod = 4985 OR cod = 5141 THEN 'Вильямс'
+       		WHEN cod = 5127 THEN 'Питер'
+		WHEN cod = 5199 THEN 'МикроАрт'
+        	WHEN cod = 3851 OR cod = 44 OR cod = 5462 OR cod = 4982 THEN 'DiaSoft'
+		WHEN cod = 3932 OR cod = 4713 OR cod = 5170 OR cod = 4687 THEN 'ДМК'
+        	WHEN cod = 5217 THEN 'Триумф'
+		WHEN cod = 4829 THEN 'Эком'
+        	WHEN cod = 5176 THEN 'Русская редакция'
 	END;
 UPDATE library.books
 	SET form =
 	CASE
 	    	WHEN cod = 3851 OR cod = 5462 OR cod = 4982 THEN '84х108/16'
-        WHEN cod = 3932 THEN '60х88/16'
-	      WHEN cod = 860 THEN '84х100/16'
-        WHEN cod = 44 THEN '60х84/16'
-	      WHEN cod = 5176 THEN ' '
-        ELSE '70х100/16'
+        	WHEN cod = 3932 THEN '60х88/16'
+		WHEN cod = 860 THEN '84х100/16'
+        	WHEN cod = 44 THEN '60х84/16'
+		WHEN cod = 5176 THEN ' '
+        	ELSE '70х100/16'
 	END;
 UPDATE library.books
 	SET tir = 5000;
@@ -67,19 +67,19 @@ UPDATE library.books
 	SET them =
 	CASE
 	    	WHEN cod = 5217 OR cod = 4829 OR cod = 5170 OR cod = 860 OR cod = 44 OR cod = 5176 THEN 'Операційні системи'
-        WHEN cod = 5462 OR cod = 4982 OR cod = 4687 THEN 'Програмування'
+        	WHEN cod = 5462 OR cod = 4982 OR cod = 4687 THEN 'Програмування'
     		ELSE 'Використання ПК в цілому'
 	END;
 UPDATE library.books
 	SET kat =
     	CASE
     		WHEN cod = 5199 THEN 'Апаратні засоби ПК'
-	      WHEN cod = 3851 THEN 'Захист і безпека ПК'
-        WHEN cod = 3932 OR cod = 4713 THEN 'Інші книги'
-	      WHEN cod = 5217 OR cod = 4829 THEN 'Windows 2000'
-        WHEN cod = 5170 THEN 'Linux'
-	      WHEN cod = 860 THEN 'Unix'
-        WHEN cod = 44 OR cod = 5176 THEN 'Інші операційні системи'
-	      WHEN cod = 5462 OR cod = 4982 OR cod = 4687 THEN 'C&C++'
+		WHEN cod = 3851 THEN 'Захист і безпека ПК'
+        	WHEN cod = 3932 OR cod = 4713 THEN 'Інші книги'
+		WHEN cod = 5217 OR cod = 4829 THEN 'Windows 2000'
+        	WHEN cod = 5170 THEN 'Linux'
+		WHEN cod = 860 THEN 'Unix'
+        	WHEN cod = 44 OR cod = 5176 THEN 'Інші операційні системи'
+		WHEN cod = 5462 OR cod = 4982 OR cod = 4687 THEN 'C&C++'
     		ELSE 'Підручники'
     	END;
