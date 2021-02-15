@@ -1,0 +1,85 @@
+//Створення таблиці
+DROP DATABASE IF EXISTS library;
+CREATE DATABASE IF NOT EXISTS library;
+CREATE TABLE books
+(
+    n SMALLINT UNSIGNED NOT NULL PRIMARY KEY,
+    cod SMALLINT UNSIGNED NOT NULL UNIQUE,
+    new SET('Yes', 'No'),
+    title VARCHAR(100) NOT NULL,
+    price FLOAT UNSIGNED NOT NULL,
+    pub VARCHAR(30) NOT NULL,
+    page SMALLINT UNSIGNED NOT NULL,
+    form VARCHAR(10),
+    dat DATE NOT NULL,
+    tir SMALLINT UNSIGNED NOT NULL,
+    them VARCHAR(30) NOT NULL,
+    kat VARCHAR(30) NOT NULL
+)ENGINE = INNODB;
+INSERT INTO books(n, cod, title, price, page, dat)
+VALUES(2, 5110, 'Аппаратные средства мультимедия. Видеосистема РС', 15.51, 400, '2000-07-24'),
+  (8, 4985, 'Освой самостоятельно модернизацию и ремонт ПК за 24 часа, 2-е изд.', 18.90, 288, '2000-07-07'),
+	(9, 5141, 'Структуры данных и алгоритмы', 37.80, 384, '2000-09-29'),
+	(20, 5127, 'Автоматизация инженерно-графических работ', 11.58, 256, '2000-06-15'),
+	(46, 5199, 'Железо IBM 2001', 30.07, 3684, '2000-12-02'),
+	(50, 3851, 'Защита информации и безопасность компьютерных систем', 26.00, 480, '1999-02-04'),
+	(58, 3932, 'Как превратить персональный компьютер в измерительный комплекс', 7.65, 144, '1999-06-09'),
+	(59, 4713, 'Plugins. Встраиваемые приложения для музыкальных программ', 11.41, 144, '2000-02-22'),
+	(175, 5217, 'Windows МЕ. Новейшие версии программ', 16.57, 320, '2000-08-25'),
+	(176, 4829, 'Windows 2000 Professional шаг за шагом с СD', 27.25, 320, '2000-04-28'),
+	(188, 5170, 'Linux Русские версии', 24.43, 346, '2000-09-29'),
+	(191, 860, 'Операционная система UNIX', 3.50, 395, '1997-05-05'),
+	(203, 44, 'Ответы на актуальные вопросы по OS/2 Warp', 5.00, 352, '1996-03-20'),
+	(206, 5176, 'Windows Ме. Спутник пользователя', 12.79, 306, '2000-10-10'),
+	(209, 5462, 'Язык программирования С++. Лекции и упражнения', 29.00, 656, '2000-12-12'),
+	(210, 4982, 'Язык программирования С. Лекции и упражнения', 29.00, 432, '2000-07-12'),
+	(220, 4687, 'Эффективное использование C++ .50 рекомендаций по улучшению ваших программ и проектов', 17.60, 240, '2000-02-03');
+UPDATE library.books
+	SET new = 'No';
+UPDATE library.books
+	SET new = 'Yes' WHERE cod = 5127 OR cod = 3851;
+UPDATE library.books
+	SET pub =
+	CASE
+    		WHEN cod = 5110 OR cod = 860 THEN 'BHV С.-Петербург'
+	      WHEN cod = 4985 OR cod = 5141 THEN 'Вильямс'
+        WHEN cod = 5127 THEN 'Питер'
+	      WHEN cod = 5199 THEN 'МикроАрт'
+        WHEN cod = 3851 OR cod = 44 OR cod = 5462 OR cod = 4982 THEN 'DiaSoft'
+	      WHEN cod = 3932 OR cod = 4713 OR cod = 5170 OR cod = 4687 THEN 'ДМК'
+        WHEN cod = 5217 THEN 'Триумф'
+	      WHEN cod = 4829 THEN 'Эком'
+        WHEN cod = 5176 THEN 'Русская редакция'
+	END;
+UPDATE library.books
+	SET form =
+	CASE
+	    	WHEN cod = 3851 OR cod = 5462 OR cod = 4982 THEN '84х108/16'
+        WHEN cod = 3932 THEN '60х88/16'
+	      WHEN cod = 860 THEN '84х100/16'
+        WHEN cod = 44 THEN '60х84/16'
+	      WHEN cod = 5176 THEN ' '
+        ELSE '70х100/16'
+	END;
+UPDATE library.books
+	SET tir = 5000;
+UPDATE library.books
+	SET them =
+	CASE
+	    	WHEN cod = 5217 OR cod = 4829 OR cod = 5170 OR cod = 860 OR cod = 44 OR cod = 5176 THEN 'Операційні системи'
+        WHEN cod = 5462 OR cod = 4982 OR cod = 4687 THEN 'Програмування'
+    		ELSE 'Використання ПК в цілому'
+	END;
+UPDATE library.books
+	SET kat =
+    	CASE
+    		WHEN cod = 5199 THEN 'Апаратні засоби ПК'
+	      WHEN cod = 3851 THEN 'Захист і безпека ПК'
+        WHEN cod = 3932 OR cod = 4713 THEN 'Інші книги'
+	      WHEN cod = 5217 OR cod = 4829 THEN 'Windows 2000'
+        WHEN cod = 5170 THEN 'Linux'
+	      WHEN cod = 860 THEN 'Unix'
+        WHEN cod = 44 OR cod = 5176 THEN 'Інші операційні системи'
+	      WHEN cod = 5462 OR cod = 4982 OR cod = 4687 THEN 'C&C++'
+    		ELSE 'Підручники'
+    	END;
