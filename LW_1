@@ -96,7 +96,6 @@ UPDATE library.books
     		ELSE 'Підручники'
     	END;
 CREATE INDEX idx_title ON library.books (title);
-CREATE INDEX idx_cod ON library.books (cod);
 
 // Додавання в таблицю нового текстового поля "Автор", розміром 15 символів
 ALTER TABLE library.books ADD author VARCHAR(15);
