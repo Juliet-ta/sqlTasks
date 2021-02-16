@@ -17,7 +17,7 @@ DROP DATABASE IF EXISTS library;
 CREATE DATABASE IF NOT EXISTS library;
 CREATE TABLE books
 (
-    n SMALLINT UNSIGNED NOT NULL,
+    n SMALLINT UNSIGNED NOT NULL UNIQUE,
     cod SMALLINT UNSIGNED NOT NULL PRIMARY KEY,
     new SET('Yes', 'No'),	//new CHAR(3) CHECK (new IN ('Yes', 'No'))
     title VARCHAR(100) NOT NULL,
@@ -104,7 +104,7 @@ ALTER TABLE library.books MODIFY COLUMN author VARCHAR(20);
 // Видалення текстового поля "Автор" з таблиці
 ALTER TABLE library.books DROP COLUMN author;
 // Зміна порядку сортування індексу і призначення його унікальності
-ORDER BY `n` DESC;
-ALTER TABLE library.books MODIFY COLUMN `n` SMALLINT(5) UNSIGNED UNIQUE;
+CREATE UNIQUE INDEX cod ON library.books(cod);
+SELECT * FROM library.books ORDER BY cod DESC;
 // Видалення індексу
-ALTER TABLE library.books DROP COLUMN `n`;
+ALTER TABLE library.books DROP INDEX cod;
