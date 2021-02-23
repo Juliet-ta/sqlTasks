@@ -11,7 +11,7 @@ SELECT * FROM `books` WHERE `dat` = NULL
 SELECT * FROM `books` WHERE YEAR(CURRENT_DATE) - YEAR(`dat`) <= 1
 
 // Вивести список книг-новинок, відсортованих за зростанням ціни
-
+SELECT * FROM `books` WHERE `new` = 'Yes' ORDER BY `price`
 
 // Вивести список книг з числом сторінок від 300 до 400, відсортованих в зворотному алфавітному порядку назв
 
