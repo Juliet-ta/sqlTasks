@@ -10,11 +10,6 @@ SELECT cod, title, new, page, price, n FROM `books`
 // Вивести значення всіх колонок 10 перших рядків
 SELECT * FROM `books` LIMIT 10
 
-// Вивести значення всіх колонок 10% перших термін
-SET @a = (SELECT CAST(COUNT(*)/10 AS UNSIGNED) FROM library.books);
-PREPARE a FROM 'SELECT * FROM library.books LIMIT ?';
-EXECUTE a USING @a;
-
 // Вивести значення колонки код без повторення однакових кодів
 SELECT DISTINCT cod FROM library.books;
 
