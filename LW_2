@@ -26,7 +26,7 @@ SELECT * FROM `books` WHERE `new` = 'Yes' AND `price` NOT BETWEEN 20 AND 30
 SELECT * FROM `books` WHERE `page` BETWEEN 300 AND 400 AND `price` BETWEEN 21 AND 29
 
 // Вивести всі книги видані взимку 2000 року
-SELECT * FROM `books` WHERE `dat` BETWEEN '2000-01-01' AND '2000-02-29'
+SELECT * FROM `books` WHERE (`dat` BETWEEN '2000-01-01' AND '2000-02-29') OR (`dat` BETWEEN '2000-12-01' AND '2000-12-31')
 
 // Вивести книги зі значеннями кодів 5110, 5141, 4985, 4241
 SELECT * FROM `books` WHERE `cod` = 5110 OR `cod` = 5141 OR `cod` = 4985 OR `cod` = 4241
