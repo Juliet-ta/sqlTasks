@@ -8,7 +8,7 @@ SELECT * FROM `books` WHERE `price` <> NULL AND `tir` = NULL
 SELECT * FROM `books` WHERE `dat` = NULL
 
 // Вивести книги, з дня видання яких пройшло не більше року.
-
+SELECT * FROM `books` WHERE YEAR(CURRENT_DATE) - YEAR(`dat`) <= 1
 
 // Вивести список книг-новинок, відсортованих за зростанням ціни
 
