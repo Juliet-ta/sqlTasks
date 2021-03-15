@@ -47,7 +47,8 @@ CREATE TABLE extra(
     date DATE NULL,
     tirage INT(11) DEFAULT 5000,
     topic SMALLINT(3) DEFAULT NULL REFERENCES topics(topic_id),
-    category SMALLINT(3) DEFAULT NULL REFERENCES categories(category_id)
+    category SMALLINT(3) DEFAULT NULL REFERENCES categories(category_id),
+    FOREIGN KEY (code) REFERENCES main (code)
 );
 INSERT INTO is_new(`is_new`) VALUES
   ('No'),
