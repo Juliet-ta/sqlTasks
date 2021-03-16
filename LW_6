@@ -1,23 +1,23 @@
 //Вивести значення наступних колонок: назва книги, ціна, назва видавництва. Використовувати внутрішнє з'єднання, застосовуючи where.
-
+SELECT main.title, main.price, publishers.publishers FROM main, extra, publishers WHERE main.code = extra.code AND extra.publisher = publishers.publisher_id
 
 //Вивести значення наступних колонок: назва книги, назва категорії. Використовувати внутрішнє з'єднання, застосовуючи inner join.
-
+SELECT main.title, categories.categories FROM main INNER JOIN extra INNER JOIN categories ON extra.category = categories.category_id AND main.code = extra.code
 
 //Вивести значення наступних колонок: назва книги, ціна, назва видавництва, формат.
-
+SELECT main.title, main.price, publishers.publishers, formats.formats FROM main, extra, publishers, formats WHERE main.code = extra.code AND extra.publisher = publishers.publisher_id AND extra.format = formats.format_id
 
 //Вивести значення наступних колонок: тема, категорія, назва книги, назва видавництва. Фільтр по темам і категоріям.
-
+SELECT topics.topics, categories.categories, main.title, publishers.publishers FROM main, extra, publishers, topics, categories WHERE main.code = extra.code AND extra.publisher = publishers.publisher_id AND extra.topic = topics.topic_id AND extra.category = categories.category_id AND topics.topics LIKE 'О%' AND categories.categories LIKE 'І%'
 
 //Вивести книги видавництва 'BHV', видані після 2000 р
-
+SELECT main.title FROM main, extra, publishers WHERE main.code = extra.code AND extra.publisher = publishers.publisher_id AND publishers.publishers LIKE 'BHV%' AND YEAR(extra.date) > 2000
 
 //Вивести загальну кількість сторінок по кожній назві категорії. Фільтр по спадаючій кількості сторінок.
-
+SELECT categories.categories, SUM(extra.pages) FROM main INNER JOIN extra INNER JOIN categories ON main.code = extra.code AND extra.category = categories.category_id GROUP BY categories.categories ORDER BY SUM(extra.pages) DESC
 
 //Вивести середню вартість книг по темі 'Використання ПК' і категорії 'Linux'.
-
+SELECT topics.topics, categories.categories, AVG(main.price) FROM main INNER JOIN extra INNER JOIN categories INNER JOIN topics ON main.code = extra.code AND extra.category = categories.category_id AND extra.topic = topics.topic_id AND topics.topics LIKE 'Використання ПК' AND categories.categories LIKE 'Інші книги'
 
 //Вивести всі дані універсального відношення. Використовувати внутрішнє з'єднання, застосовуючи where.
 
