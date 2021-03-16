@@ -8,7 +8,7 @@
 DROP DATABASE IF EXISTS shop;
 CREATE DATABASE IF NOT EXISTS shop;
 CREATE TABLE main(
-    code SMALLINT PRIMARY KEY,
+    code SMALLINT(4) PRIMARY KEY,
     title VARCHAR(100) NOT NULL DEFAULT '',
     price FLOAT UNSIGNED NOT NULL
 );
@@ -33,22 +33,21 @@ CREATE TABLE categories(
     categories VARCHAR(25) NOT NULL UNIQUE
 );
 CREATE TABLE extra(
-    code SMALLINT(3) PRIMARY KEY,
-    is_new SET('No', 'Yes') DEFAULT 'YES',
-    publisher VARCHAR(30) DEFAULT NULL REFERENCES publishers(publisher_id),
+    code SMALLINT(4) PRIMARY KEY,
+    is_new SMALLINT(2) DEFAULT NULL,
+    publisher SMALLINT(2) DEFAULT NULL,
     pages SMALLINT UNSIGNED DEFAULT NULL,
-    format SMALLINT(2) DEFAULT NULL REFERENCES formats(format_id),
-    
-    /*    publisher SET('BHV С.-Петербург', 'Вильямс', 'Питер', 'МикроАрт', 'DiaSoft', 'ДМК', 'Триумф', 'Эком', 'Русская редакция') DEFAULT NULL REFERENCES publishers(publisher_id),
-    pages SMALLINT UNSIGNED DEFAULT NULL,
-    format SET('70х100/16', '84х108/16', '60х88/16') DEFAULT NULL REFERENCES formats(format_id),
-    */
-    
+    format SMALLINT(2) DEFAULT NULL,
     date DATE NULL,
     tirage INT(11) DEFAULT 5000,
-    topic SMALLINT(3) DEFAULT NULL REFERENCES topics(topic_id),
-    category SMALLINT(3) DEFAULT NULL REFERENCES categories(category_id),
-    FOREIGN KEY (code) REFERENCES main (code)
+    topic SMALLINT(3) DEFAULT NULL,
+    category SMALLINT(3) DEFAULT NULL,
+    FOREIGN KEY (code) REFERENCES main (code),
+    FOREIGN KEY (is_new) REFERENCES is_new(is_new_id),
+    FOREIGN KEY (publisher) REFERENCES publishers(publisher_id),
+    FOREIGN KEY (format) REFERENCES formats(format_id),
+    FOREIGN KEY (topic) REFERENCES  topics(topic_id),
+    FOREIGN KEY (category) REFERENCES categories(category_id)
 );
 INSERT INTO is_new(`is_new`) VALUES
   ('No'),
