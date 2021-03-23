@@ -30,31 +30,31 @@ SELECT main.*, is_new.is_new, publishers.publishers, extra.pages, formats.format
 SELECT main.*, is_new.is_new, publishers.publishers, extra.pages, formats.formats, extra.date, extra.tirage, topics.topics, categories.categories FROM  (extra, is_new, publishers, formats, topics, categories) RIGHT JOIN main ON main.code = extra.code AND extra.is_new = is_new.is_new_id AND extra.publisher = publishers.publisher_id AND extra.format = formats.format_id AND extra.topic = topics.topic_id AND extra.category = categories.category_id;
 
 //Вивести пари книг, що мають однакову кількість сторінок. Використовувати само об’єднання і аліаси (self join).
-SELECT DISTINCT minfo1.book_title '1_book_title', minfo2.book_title '2_book_title' FROM maininfo minfo1 JOIN maininfo minfo2 ON minfo1.pages = minfo2.pages AND minfo1.N != minfo2.N;
+SELECT main1.title '1_book_title', main2.title '2_book_title' FROM main main1 JOIN (main main2, extra ex1 JOIN extra ex2) ON main1.code = ex1.code AND main2.code = ex2.code AND ex1.pages = ex2.pages AND main1.code != main2.code AND main1.code < main2.code;
 
 //Вивести тріади книг, що мають однакову ціну. Використовувати самооб'єднання і аліаси (self join).
-SELECT DISTINCT m1.book_title '1_book_title', m2.book_title '2_book_title', m3.book_title '3_book_title' FROM maininfo m1 JOIN maininfo m2 ON m1.price = m2.price AND m1.N != m2.N JOIN maininfo m3 ON m1.price = m3.price AND m1.N != m3.N;
+SELECT main1.title '1_book_title', main2.title '2_book_title', main3.title '3_book_title' FROM main main1 JOIN (main main2, main main3) ON main1.code != main2.code != main3.code AND main1.price = main2.price = main3.price AND main1.code < main2.code < main3.code;
 
 //Вивести всі книги категорії 'C ++'. Використовувати підзапити (subquery).
-SELECT * from maininfo WHERE category = (SELECT category_id FROM categories WHERE categories.category_name = 'C&C++');
+SELECT main.*, categories.categories FROM main, extra, categories WHERE main.code = extra.code AND extra.category = categories.category_id AND extra.category = (SELECT category_id FROM categories WHERE categories.categories = 'C&C++');
 
 //Вивести книги видавництва 'BHV', видані після 2000 р Використовувати підзапити (subquery).
-SELECT * from maininfo WHERE publisher = (SELECT pub_id from publishernames WHERE publishernames.publisher_name = 'BHV С.-Петербург') AND YEAR(pub_date) > 2000;
+SELECT main.*, publishers.publishers, extra.date FROM main, extra, publishers WHERE main.code = extra.code AND extra.publisher = publishers.publisher_id AND extra.publisher = (SELECT publisher_id from publishers WHERE publishers.publishers = 'BHV С.-Петербург') AND YEAR(extra.date) > 2000;
 
 //Вивести список видавництв, у яких розмір книг перевищує 400 сторінок. Використовувати пов'язані підзапити (correlated subquery).
-SELECT * FROM publishernames WHERE (SELECT MIN(pages) FROM maininfo WHERE maininfo.publisher = publishernames.pub_id) > 400;
+SELECT publishers.publishers FROM publishers WHERE (SELECT MIN(pages) FROM extra WHERE extra.publisher = publishers.publisher_id) > 400;
 
 //Вивести список категорій в яких більше 3-х книг. Використовувати пов'язані підзапити (correlated subquery).
-SELECT * FROM categories WHERE (SELECT COUNT(*) FROM maininfo WHERE maininfo.category = categories.category_id) > 3;
+SELECT categories.categories FROM categories WHERE (SELECT COUNT(*) FROM extra WHERE extra.category = categories.category_id) > 3;
 
 //Вивести список книг видавництва 'BHV', якщо в списку є хоча б одна книга цього видавництва. Використовувати exists.
-SELECT * FROM maininfo WHERE EXISTS (SELECT * FROM publishernames WHERE publishernames.publisher_name = 'BHV С.-Петербург' AND publishernames.pub_id = maininfo.publisher);
+SELECT main.* FROM main, extra WHERE main.code = extra.code AND EXISTS (SELECT * FROM publishers WHERE publishers.publishers = 'BHV С.-Петербург' AND publishers.publisher_id = extra.publisher);
 
 //Вивести список книг видавництва 'BHV', якщо в списку немає жодної книги цього видавництва. Використовувати not exists.
-SELECT * FROM maininfo WHERE NOT EXISTS (SELECT * FROM publishernames WHERE publishernames.publisher_name = 'BHV С.-Петербург' AND publishernames.pub_id = maininfo.publisher) AND publisher = (SELECT publishernames.pub_id FROM publishernames WHERE publishernames.publisher_name = 'BHV С.-Петербург');
+SELECT main.* FROM main, extra WHERE main.code = extra.code AND NOT EXISTS (SELECT * FROM publishers WHERE publishers.publishers = 'BHV С.-Петербург' AND publishers.publisher_id = extra.publisher) AND extra.publisher = (SELECT publisher_id FROM publishers WHERE publishers.publishers = 'BHV С.-Петербург');
 
 //Вивести відсортований загальний список назв тем і категорій. Використовувати union.
-((SELECT * FROM topics) UNION (SELECT * FROM categories)) ORDER BY topic_name;
+((SELECT * FROM topics) UNION (SELECT * FROM categories)) ORDER BY topics;
 
 //Вивести відсортований в зворотному порядку загальний список перших слів, назв книг і категорій що не повторюються. Використовувати union.
-SELECT DISTINCT name FROM ((SELECT REGEXP_SUBSTR(TRIM(book_title), '^[^\\s]+') AS name FROM maininfo) UNION ALL(SELECT REGEXP_SUBSTR(TRIM(category_name), '^[^\\s]+') as name FROM categories)) names ORDER BY name DESC;
+SELECT DISTINCT name FROM ((SELECT REGEXP_SUBSTR(TRIM(title), '^[^\\s]+') AS name FROM main) UNION (SELECT REGEXP_SUBSTR(TRIM(categories), '^[^\\s]+') as name FROM categories)) names ORDER BY name DESC;
