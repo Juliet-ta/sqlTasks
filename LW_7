@@ -1,5 +1,7 @@
 //Вивести значення наступних колонок: назва книги, ціна, назва видавництва, формат.
-
+CREATE PROCEDURE title_price_pub_form()
+SELECT main.title, main.price, publishers.publishers, formats.formats FROM main, extra, publishers, formats WHERE main.code = extra.code AND extra.publisher = publishers.publisher_id AND extra.format = formats.format_id;
+CALL title_price_pub_form;
 
 //Вивести значення наступних колонок: тема, категорія, назва книги, назва видавництва. Фільтр по темам і категоріям.
 
