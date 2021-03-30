@@ -33,7 +33,7 @@ SELECT main.*, is_new.is_new, publishers.publishers, extra.pages, formats.format
 SELECT main1.title '1_book_title', main2.title '2_book_title' FROM main main1 JOIN (main main2, extra ex1 JOIN extra ex2) ON main1.code = ex1.code AND main2.code = ex2.code AND ex1.pages = ex2.pages AND main1.code != main2.code AND main1.code < main2.code;
 
 //Вивести тріади книг, що мають однакову ціну. Використовувати самооб'єднання і аліаси (self join).
-SELECT main1.title '1_book_title', main2.title '2_book_title', main3.title '3_book_title' FROM main main1 JOIN (main main2, main main3) ON main1.code != main2.code != main3.code AND main1.price = main2.price = main3.price AND main1.code < main2.code < main3.code;
+SELECT main1.title '1_book_title', main2.title '2_book_title', main3.title '3_book_title' FROM main main1 JOIN (main main2, main main3) ON main1.code != main2.code AND main1.code != main3.code AND main1.price = main2.price AND main1.price = main3.price AND main1.code < main2.code AND main2.code < main3.code;
 
 //Вивести всі книги категорії 'C ++'. Використовувати підзапити (subquery).
 SELECT main.*, categories.categories FROM main, extra, categories WHERE main.code = extra.code AND extra.category = categories.category_id AND extra.category = (SELECT category_id FROM categories WHERE categories.categories = 'C&C++');
