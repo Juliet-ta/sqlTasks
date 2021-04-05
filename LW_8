@@ -1,6 +1,17 @@
 //Реалізувати набір тригерів, що реалізують такі ділові правила:
 //Кількість тем може бути в діапазоні від 5 до 10.
-
+DELIMITER $$
+CREATE TRIGGER topics_5_10 BEFORE INSERT ON `topics`
+FOR EACH ROW
+IF (SELECT COUNT(*) FROM `topics`) > 10
+THEN
+ SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Кількість тем більша 10';
+ELSEIF (SELECT COUNT(*) FROM `topics`) < 5
+THEN
+ SET @err2='Кількість тем менша 5 ';
+END IF;
+$$
+DELIMITER ;
 
 //Новинкою може бути тільки книга видана в поточному році.
 
