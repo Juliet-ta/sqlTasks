@@ -8,7 +8,7 @@ THEN
  SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Кількість тем більша 10';
 ELSEIF (SELECT COUNT(*) FROM `topics`) < 5
 THEN
- SET @err2='Кількість тем менша 5 ';
+ SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT ='Кількість тем менша 5 ';
 END IF;
 $$
 DELIMITER ;
@@ -23,7 +23,7 @@ THEN
  SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Книга має бути новинкою';
 ELSEIF NOT YEAR(NOW()) = YEAR(NEW.date) AND NEW.is_new = 2
 THEN
- SET @err2 = 'Книга НЕ має бути новинкою';
+ SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Книга НЕ має бути новинкою';
 END IF;
 $$
 DELIMITER ;
@@ -33,15 +33,15 @@ DROP TRIGGER IF EXISTS pages_price;
 DELIMITER $$
 CREATE TRIGGER pages_price BEFORE INSERT ON `extra`
 FOR EACH ROW
-IF NEW.pages < 100 AND main.price >= 10
+IF NEW.pages < 100 AND (SELECT price FROM main WHERE NEW.code = main.code) >= 10
 THEN
  SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Ціна має бути не більше 10$';
-ELSEIF NEW.pages < 200 AND main.price >= 20
+ELSEIF NEW.pages < 200 AND (SELECT price FROM main WHERE NEW.code = main.code) >= 20
 THEN
- SET @err2 = 'Ціна має бути не більше 20$';
-ELSEIF NEW.pages < 300 AND main.price >= 30
+ SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Ціна має бути не більше 20$';
+ELSEIF NEW.pages < 300 AND (SELECT price FROM main WHERE NEW.code = main.code) >= 30
 THEN
- SET @err3 = 'Ціна має бути не більше 30$';
+ SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Ціна має бути не більше 30$';
 END IF;
 $$
 DELIMITER ;
