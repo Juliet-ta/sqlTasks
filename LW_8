@@ -20,16 +20,31 @@ CREATE TRIGGER new BEFORE INSERT ON `extra`
 FOR EACH ROW
 IF YEAR(NOW()) = YEAR(NEW.date) AND NEW.is_new = 1
 THEN
- SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Новинка';
+ SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Книга має бути новинкою';
 ELSEIF NOT YEAR(NOW()) = YEAR(NEW.date) AND NEW.is_new = 2
 THEN
- SET @err2 = 'НЕ новинка';
+ SET @err2 = 'Книга НЕ має бути новинкою';
 END IF;
 $$
 DELIMITER ;
 
 //Книга з кількістю сторінок до 100 не може коштувати більше 10 $, до 200 - 20 $, до 300 - 30 $.
-
+DROP TRIGGER IF EXISTS pages_price;
+DELIMITER $$
+CREATE TRIGGER pages_price BEFORE INSERT ON `extra`
+FOR EACH ROW
+IF NEW.pages < 100 AND main.price >= 10
+THEN
+ SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Ціна має бути не більше 10$';
+ELSEIF NEW.pages < 200 AND main.price >= 20
+THEN
+ SET @err2 = 'Ціна має бути не більше 20$';
+ELSEIF NEW.pages < 300 AND main.price >= 30
+THEN
+ SET @err3 = 'Ціна має бути не більше 30$';
+END IF;
+$$
+DELIMITER ;
 
 //Видавництво "BHV" не випускає книги накладом меншим 5000, а видавництво Diasoft - 10000.
 
