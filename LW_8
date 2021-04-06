@@ -14,7 +14,18 @@ $$
 DELIMITER ;
 
 //Новинкою може бути тільки книга видана в поточному році.
-
+DELIMITER $$
+CREATE TRIGGER new BEFORE INSERT ON `extra`
+FOR EACH ROW
+IF YEAR(CURRENT_DATE) = YEAR(NEW.date) AND NEW.is_new = 2
+THEN
+ SET @err1 = 'Новинка';
+ELSEIF NOT YEAR(CURRENT_DATE) = YEAR(NEW.date) AND NEW.is_new = 1
+THEN
+ SET @err2 = 'НЕ новинка';
+END IF;
+$$
+DELIMITER ;
 
 //Книга з кількістю сторінок до 100 не може коштувати більше 10 $, до 200 - 20 $, до 300 - 30 $.
 
