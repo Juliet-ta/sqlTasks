@@ -8,7 +8,7 @@ THEN
  SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Кількість тем більша 10';
 ELSEIF (SELECT COUNT(*) FROM `topics`) < 5
 THEN
- SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT ='Кількість тем менша 5 ';
+ SET @err2='Кількість тем менша 5 ';
 END IF;
 $$
 DELIMITER ;
@@ -23,7 +23,7 @@ THEN
  SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Книга має бути новинкою';
 ELSEIF NOT YEAR(NOW()) = YEAR(NEW.date) AND NEW.is_new = 2
 THEN
- SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Книга НЕ має бути новинкою';
+ SET @err2 = 'Книга НЕ має бути новинкою';
 END IF;
 $$
 DELIMITER ;
@@ -33,35 +33,143 @@ DROP TRIGGER IF EXISTS pages_price;
 DELIMITER $$
 CREATE TRIGGER pages_price BEFORE INSERT ON `extra`
 FOR EACH ROW
-IF NEW.pages < 100 AND (SELECT price FROM main WHERE NEW.code = main.code) >= 10
+IF NEW.pages < 100 AND main.price >= 10
 THEN
  SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Ціна має бути не більше 10$';
-ELSEIF NEW.pages < 200 AND (SELECT price FROM main WHERE NEW.code = main.code) >= 20
+ELSEIF NEW.pages < 200 AND main.price >= 20
 THEN
- SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Ціна має бути не більше 20$';
-ELSEIF NEW.pages < 300 AND (SELECT price FROM main WHERE NEW.code = main.code) >= 30
+ SET @err2 = 'Ціна має бути не більше 20$';
+ELSEIF NEW.pages < 300 AND main.price >= 30
 THEN
- SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Ціна має бути не більше 30$';
+ SET @err3 = 'Ціна має бути не більше 30$';
 END IF;
 $$
 DELIMITER ;
 
 //Видавництво "BHV" не випускає книги накладом меншим 5000, а видавництво Diasoft - 10000.
-
+DROP TRIGGER IF EXISTS BHVandDias_tir;
+DELIMITER $$
+CREATE TRIGGER BHVandDias_tir BEFORE INSERT ON `extra`
+FOR EACH ROW
+IF NEW.publisher = (SELECT publisher_id FROM publishers WHERE publishers.publishers LIKE 'BHV%') AND NEW.tirage < 5000
+THEN
+ SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Мінімільний тираж BHV 5000';
+ELSEIF NEW.publisher = (SELECT publisher_id FROM publishers WHERE publishers.publishers LIKE 'DiaSoft') AND NEW.tirage < 10000
+THEN
+ SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Мінімільний тираж Diasoft 10000';
+END IF;
+$$
 
 //Книги з однаковим кодом повинні мати однакові дані.
-
+DROP TRIGGER IF EXISTS same_code1;
+DELIMITER $$
+CREATE TRIGGER same_code1 BEFORE INSERT ON `main`
+FOR EACH ROW
+BEGIN
+    SET @same_code = 0;
+    SELECT COUNT(*) INTO @same_code FROM main
+    WHERE code = NEW.code AND (
+        title <> NEW.title OR
+        price <> NEW.price);
+    IF (@same_code > 0) THEN SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Книги з однаковим кодом повинні бути з однаковими даними';
+    END IF;
+END
+$$
+DELIMITER ;
+DROP TRIGGER IF EXISTS same_code2;
+DELIMITER $$
+CREATE TRIGGER same_code2 BEFORE INSERT ON `extra`
+FOR EACH ROW
+BEGIN
+    SET @same_code = 0;
+    SELECT COUNT(*) INTO @same_code FROM extra
+    WHERE code = NEW.code AND (
+        is_new <> NEW.is_new OR
+        publisher <> NEW.publisher OR
+        pages <> NEW.pages OR
+        format <> NEW.format OR
+        date <> NEW.date OR
+        tirage <> NEW.tirage OR
+        topic <> NEW.topic OR
+        category <> NEW.category);
+    IF (@same_code > 0) THEN SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Книги з однаковим кодом повинні бути з однаковими даними';
+    END IF;
+END
+$$
+DELIMITER ;
 
 //При спробі видалення книги видається інформація про кількість видалених рядків. Якщо користувач не "dbo", то видалення забороняється.
-
+DROP TRIGGER IF EXISTS dbo_delete;
+DELIMITER $$
+CREATE TRIGGER dbo_delete BEFORE DELETE ON main FOR EACH ROW
+BEGIN
+    IF (REGEXP_SUBSTR(TRIM(CURRENT_USER()), '^[^\@]+') <> 'root')
+    THEN SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Лише користувач dbo може видаляти книги';
+    ELSE
+    SET @is_new = (SELECT is_new.is_new FROM is_new INNER JOIN extra ON extra.code = OLD.code AND extra.is_new = is_new.is_new_id);
+    SET @publisher = (SELECT publishers.publishers FROM publishers INNER JOIN extra ON extra.code = OLD.code AND extra.publisher = publishers.publisher_id);
+    SET @pages = (SELECT pages FROM extra WHERE extra.code = OLD.code);
+    SET @format = (SELECT formats.formats FROM formats INNER JOIN extra ON extra.code = OLD.code AND extra.format = formats.format_id);
+    SET @date = (SELECT date FROM extra WHERE extra.code = OLD.code);
+    SET @tirage = (SELECT tirage FROM extra WHERE extra.code = OLD.code);
+    SET @topic = (SELECT topics.topics FROM topics INNER JOIN extra ON extra.code = OLD.code AND extra.topic = topics.topic_id);
+    SET @category = (SELECT categories.categories FROM categories INNER JOIN extra ON extra.code = OLD.code AND extra.category = categories.category_id);
+    INSERT INTO basket (`code`, `title`, `price`, `is_new`, `publisher`, `pages`, `format`, `date`, `tirage`, `topic`, `category`) VALUE	(OLD.code, OLD.title, OLD.price, @is_new, @publisher, @pages, @format, @date, @tirage, @topic, @category);
+    DELETE FROM extra WHERE code = OLD.code;
+    END IF;
+END
+$$
+DELIMITER ;
 
 //Користувач "dbo" не має права змінювати ціну книги.
-
+DROP TRIGGER IF EXISTS change_price;
+DELIMITER $$
+CREATE TRIGGER change_price BEFORE UPDATE ON main FOR EACH ROW
+BEGIN
+    IF (REGEXP_SUBSTR(TRIM(CURRENT_USER()), '^[^\@]+') <=> 'root') AND NEW.price <> OLD.price
+    THEN SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Користувач dbo не може змінювати ціну';
+    END IF;
+END
+$$
+DELIMITER ;
 
 //Видавництва ДМК і Еком підручники не видають.
-
+DROP TRIGGER IF EXISTS not_publisher;
+DELIMITER $$
+CREATE TRIGGER not_publisher BEFORE INSERT ON extra FOR EACH ROW
+BEGIN
+    IF NEW.publisher = (SELECT publishers.publisher_id FROM publishers WHERE publishers.publishers LIKE '%ДМК%')
+    THEN SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'ДМК більше не видає підручники';
+    ELSEIF NEW.publisher = (SELECT publishers.publisher_id FROM publishers WHERE publishers.publishers LIKE '%Эком%')
+    THEN SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Эком більше не видає підручники';
+    END IF;
+END
+$$
+DELIMITER ;
 
 //Видавництво не може випустити більше 10 новинок протягом одного місяця поточного року.
-
+DROP TRIGGER IF EXISTS not_10new;
+DELIMITER $$
+CREATE TRIGGER not_10new BEFORE INSERT ON extra FOR EACH ROW
+BEGIN
+    SET @publisher_newbooks_count = 0;
+    SELECT COUNT(*) INTO @publisher_newbooks_count FROM extra
+    WHERE extra.publisher = NEW.publisher AND extra.is_new = 2 AND YEAR(NOW()) = YEAR(extra.date) AND MONTH(NOW()) = MONTH(extra.date);
+    IF (NEW.is_new <=> 2 AND @publisher_newbooks_count > 10) THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Видавництво не може видавати більше ніж 10 новинок на місяць';
+    END IF;
+END
+$$
+DELIMITER ;
 
 //Видавництво BHV не випускає книги формату 60х88 / 16.
+DROP TRIGGER IF EXISTS not_publisher;
+DELIMITER $$
+CREATE TRIGGER not_publisher BEFORE INSERT ON extra FOR EACH ROW
+BEGIN
+    IF (NEW.publisher = (SELECT publishers.publisher_id FROM publishers WHERE publishers.publishers LIKE '%BHV%')) AND (NEW.format = (SELECT formats.format_id FROM formats WHERE formats.formats LIKE '60х88/16'))
+    THEN SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'BHV не видає підручники формата 60x88/16';
+    END IF;
+END
+$$
+DELIMITER ;
