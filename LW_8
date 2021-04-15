@@ -39,10 +39,10 @@ DELIMITER ;
 DELIMITER $$
 CREATE TRIGGER new_update BEFORE UPDATE ON `extra`
 FOR EACH ROW
-IF YEAR(NOW()) = YEAR(NEW.date) AND NEW.is_new = 1
+IF ((YEAR(NOW()) = YEAR(NEW.date) AND NEW.is_new = 1) OR (YEAR(NOW()) = YEAR(OLD.date) AND NEW.is_new = 1) OR (YEAR(NOW()) = YEAR(NEW.date) AND OLD.is_new = 1))
 THEN
  SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Книга має бути новинкою';
-ELSEIF NOT YEAR(NOW()) = YEAR(NEW.date) AND NEW.is_new = 2
+ELSEIF ((NOT YEAR(NOW()) = YEAR(NEW.date) AND NEW.is_new = 2) OR (NOT YEAR(NOW()) = YEAR(OLD.date) AND NEW.is_new = 2) OR (NOT YEAR(NOW()) = YEAR(NEW.date) AND OLD.is_new = 2))
 THEN
  SET @err2 = 'Книга НЕ має бути новинкою';
 END IF;
