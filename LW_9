@@ -1,7 +1,23 @@
 //Розробити та перевірити скалярну (scalar) функцію, що повертає загальну вартість книг виданих в певному році.
-
+DROP FUNCTION sumBookPriceInYear
+GO
+CREATE FUNCTION dbo.sumBookPriceInYear (@year INT)
+RETURNS FLOAT
+AS
+BEGIN
+	DECLARE @sumprices FLOAT;
+	SELECT @sumprices = SUM(price) FROM main, extra WHERE main.code = extra.code AND YEAR([date]) = @year
+	RETURN @sumprices;
+END;
+GO
+SELECT dbo.sumBookPriceInYear (1999)
 
 //Розробити і перевірити табличну (inline) функцію, яка повертає список книг виданих в певному році.
+GO
+CREATE FUNCTION dbo.booksPubInYear(@year INT)
+RETURNS TABLE
+AS RETURN (SELECT main.code, main.title, main.price, extra.is_new, extra.publisher, extra.pages, extra.format, extra.date, extra.tirage, extra.topic, extra.category FROM main, extra WHERE main.code = extra.code AND YEAR([date])=@year);
+GO
 
 
 //Розробити і перевірити функцію типу multi-statement, яка буде:
