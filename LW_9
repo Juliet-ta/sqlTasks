@@ -18,7 +18,7 @@ CREATE FUNCTION dbo.booksPubInYear(@year INT)
 RETURNS TABLE
 AS RETURN (SELECT main.code, main.title, main.price, extra.is_new, extra.publisher, extra.pages, extra.format, extra.date, extra.tirage, extra.topic, extra.category FROM main, extra WHERE main.code = extra.code AND YEAR([date])=@year);
 GO
-
+SELECT * from booksPublishedInYear(1999)
 
 //Розробити і перевірити функцію типу multi-statement, яка буде:
 //a.	приймати в якості вхідного параметра рядок, що містить список назв видавництв, розділених символом ‘;’;  
