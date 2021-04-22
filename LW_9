@@ -37,7 +37,10 @@ BEGIN
 	END;
 	RETURN;
 END;
-SELECT * FROM publisherList('BHV С.-Петербург;Вильямс;Питер;МикроАрт;DiaSoft;ДМК;Триумф;Эком;Русская редакция')
+USE shop
+GO
+SELECT string_agg([publishers], ';')
+FROM publishers
 
 //Виконати набір операцій по роботі з SQL курсором: оголосити курсор;
 //a.	використовувати змінну для оголошення курсору;
