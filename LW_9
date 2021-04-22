@@ -37,10 +37,9 @@ BEGIN
 	END;
 	RETURN;
 END;
-USE shop
-GO
-SELECT string_agg([publishers], ';')
-FROM publishers
+DECLARE @string NVARCHAR(MAX);
+SELECT @string = string_agg(publisher_name, ';') FROM publishers;
+SELECT * from dbo.publisherList(@string);
 
 //Виконати набір операцій по роботі з SQL курсором: оголосити курсор;
 //a.	використовувати змінну для оголошення курсору;
