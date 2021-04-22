@@ -24,7 +24,20 @@ SELECT * from booksPublishedInYear(1999)
 //a.	приймати в якості вхідного параметра рядок, що містить список назв видавництв, розділених символом ‘;’;  
 //b.	виділяти з цього рядка назву видавництва;
 //c.	формувати нумерований список назв видавництв.
-
+CREATE FUNCTION dbo.publisherList(@Input NVARCHAR(MAX))
+RETURNS @result TABLE (Topic NVARCHAR(MAX)) AS
+BEGIN
+	DECLARE @temp NVARCHAR(MAX);
+	IF (RIGHT(@Input,1)<>';') SET @Input=CONCAT(@Input, ';');
+	WHILE CHARINDEX(';', @Input)>0
+	BEGIN
+		SET @temp=REPLACE(SUBSTRING(@Input, 1, CHARINDEX(';', @Input)), ';', '');
+		INSERT INTO @result (Topic) VALUES (@temp);
+		SET @Input = REPLACE(@Input, @temp+';', '');
+	END;
+	RETURN;
+END;
+SELECT * FROM publisherList('BHV С.-Петербург;Вильямс;Питер;МикроАрт;DiaSoft;ДМК;Триумф;Эком;Русская редакция')
 
 //Виконати набір операцій по роботі з SQL курсором: оголосити курсор;
 //a.	використовувати змінну для оголошення курсору;
