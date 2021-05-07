@@ -4,7 +4,7 @@ CREATE TABLE info(
     id SMALLINT(4) PRIMARY KEY AUTO_INCREMENT,
     name VARCHAR(100) NOT NULL UNIQUE,
     email VARCHAR(50) NOT NULL UNIQUE,
-    category SMALLINT(1),
+    category SMALLINT(2),
     subject SMALLINT(2) NOT NULL,
     district SMALLINT(1) NOT NULL,
     locality VARCHAR(50) NOT NULL,
