@@ -28,6 +28,7 @@ CREATE TABLE subjects(
     subject_name VARCHAR(30) NOT NULL UNIQUE
 );
 
+// Введення данних
 INSERT INTO districts(`district_name`) VALUES
   ('Бериславський район'),
   ('Генічеський район'),
