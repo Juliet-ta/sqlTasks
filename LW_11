@@ -65,5 +65,23 @@ INSERT INTO info (`name`, `email`, `category`, `subject`, `district`, `locality`
 ('e e e', 'e@gmail.com', 4, 4, 5, 'eee', 'EEE', 'Ee, Ee, Ee', '+380236598203');
 
 // Триггери
+DELIMITER $$
+CREATE TRIGGER name3_insert BEFORE INSERT ON `name`
+FOR EACH ROW
+IF NEW.name LIKE '% % %'
+THEN
+ SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = "Введіть прізвище, ім'я та по батькові";
+END IF;
+$$
+DELIMITER ;
+DELIMITER $$
+CREATE TRIGGER name3_update BEFORE UPDATE ON `name`
+FOR EACH ROW
+IF NEW.name LIKE '% % %'
+THEN
+ SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = "Введіть прізвище, ім'я та по батькові";
+END IF;
+$$
+DELIMITER ;
 
 // Процедури
