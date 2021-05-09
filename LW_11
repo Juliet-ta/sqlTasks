@@ -1,20 +1,6 @@
 // Створення БД
+DROP DATABASE IF EXISTS teachers;
 CREATE DATABASE IF NOT EXISTS teachers;
-CREATE TABLE info(
-    id SMALLINT(4) PRIMARY KEY AUTO_INCREMENT,
-    name VARCHAR(100) NOT NULL UNIQUE,
-    email VARCHAR(50) NOT NULL UNIQUE,
-    category SMALLINT(2),
-    subject SMALLINT(2) NOT NULL,
-    district SMALLINT(1) NOT NULL,
-    locality VARCHAR(50) NOT NULL,
-    institution VARCHAR(70) NOT NULL,
-    student_name VARCHAR(200) UNIQUE,
-    student_number VARCHAR(100) UNIQUE,
-    FOREIGN KEY (district) REFERENCES districts(district_id),
-    FOREIGN KEY (category) REFERENCES categories(category_id),
-    FOREIGN KEY (subject) REFERENCES subjects(subject_id)
-);
 CREATE TABLE districts(
     district_id SMALLINT(1) NOT NULL PRIMARY KEY AUTO_INCREMENT,
     district_name VARCHAR(50) NOT NULL UNIQUE
@@ -26,6 +12,21 @@ CREATE TABLE categories(
 CREATE TABLE subjects(
     subject_id SMALLINT(2) NOT NULL PRIMARY KEY AUTO_INCREMENT,
     subject_name VARCHAR(30) NOT NULL UNIQUE
+);
+CREATE TABLE info(
+    id SMALLINT(4) PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(100) NOT NULL UNIQUE,
+    email VARCHAR(50) NOT NULL UNIQUE,
+    category SMALLINT(2),
+    subject SMALLINT(2) NOT NULL,
+    district SMALLINT(1) NOT NULL,
+    locality VARCHAR(50) NOT NULL,
+    institution VARCHAR(70) NOT NULL,
+    student_name VARCHAR(200) UNIQUE,
+    student_number VARCHAR(13) UNIQUE,
+    FOREIGN KEY (district) REFERENCES districts(district_id),
+    FOREIGN KEY (category) REFERENCES categories(category_id),
+    FOREIGN KEY (subject) REFERENCES subjects(subject_id)
 );
 
 // Введення данних
@@ -41,21 +42,21 @@ INSERT INTO categories(`category_name`) VALUES
   ('ІІ'),
   ('Вища');
 INSERT INTO subjects(`subject_name`) VALUES
-  ('Українська мова та література'),
-  ('Англійська мова'),
-  ('Зарубіжна література'),
-  ('Історія України та всесвітня історія'),
-  ('Мистецтво'),
   ('Алгебра та геометрія'),
+  ('Англійська мова'),
   ('Біологія й екологія'),
   ('Географія'),
-  ('Трудове навчання'),
+  ('Зарубіжна література'),
   ('Інформатика'),
-  ('Фізична культура'),
-  ('Фізика й астрономія'),
-  ('Хімія'),
+  ('Історія України та всесвітня історія'),
+  ('Креслення'),
+  ('Мистецтво'),
   ('Основи безпеки життєдіяльності та захист Вітчизни'),
-  ('Креслення');
+  ('Трудове навчання'),
+  ('Українська мова та література'),
+  ('Фізика й астрономія'),
+  ('Фізична культура'),
+  ('Хімія');
 INSERT INTO info (`name`, `email`, `category`, `subject`, `district`, `locality`, `institution`, `student_name`, `student_number`) VALUES
 ('a a a', 'a@gmail.com', 1, 5, 1, 'aaa', 'AAA', 'Aa, Aa, Aa', '+380339886745'),
 ('b b b', 'b@gmail.com', 2, 7, 2, 'bbb', 'BBB', 'Bb, Bb, Bb', '+380955474560'),
