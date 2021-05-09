@@ -68,7 +68,7 @@ INSERT INTO info (`name`, `email`, `category`, `subject`, `district`, `locality`
 DELIMITER $$
 CREATE TRIGGER name3_insert BEFORE INSERT ON `info`
 FOR EACH ROW
-IF NEW.name LIKE '% % %'
+IF NEW.name NOT LIKE '% % %' OR NEW.name LIKE '% % % %'
 THEN
  SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = "Введіть прізвище, ім'я та по батькові";
 END IF;
@@ -77,7 +77,7 @@ DELIMITER ;
 DELIMITER $$
 CREATE TRIGGER name3_update BEFORE UPDATE ON `info`
 FOR EACH ROW
-IF NEW.name LIKE '% % %'
+IF NEW.name NOT LIKE '% % %' OR NEW.name LIKE '% % % %'
 THEN
  SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = "Введіть прізвище, ім'я та по батькові";
 END IF;
