@@ -13,21 +13,26 @@ CREATE TABLE subjects(
     subject_id SMALLINT(2) NOT NULL PRIMARY KEY AUTO_INCREMENT,
     subject_name VARCHAR(30) NOT NULL UNIQUE
 );
+CREATE TABLE students(
+    student_name VARCHAR(100) NOT NULL,
+    student_phnumber CHAR(13) NOT NULL UNIQUE,
+    teacher_id SMALLINT(4) NOT NULL,
+    FOREIGN KEY (`teacher_id`) REFERENCES `info`(`id`)
+);
 CREATE TABLE info(
     id SMALLINT(4) PRIMARY KEY AUTO_INCREMENT,
-    name VARCHAR(100) NOT NULL UNIQUE,
+    name VARCHAR(100) NOT NULL,
     email VARCHAR(50) NOT NULL UNIQUE,
     category SMALLINT(2),
     subject SMALLINT(2) NOT NULL,
     district SMALLINT(1) NOT NULL,
     locality VARCHAR(50) NOT NULL,
     institution VARCHAR(70) NOT NULL,
-    student_name VARCHAR(200) UNIQUE,
-    student_number VARCHAR(13) UNIQUE,
     FOREIGN KEY (district) REFERENCES districts(district_id),
     FOREIGN KEY (category) REFERENCES categories(category_id),
     FOREIGN KEY (subject) REFERENCES subjects(subject_id)
 );
+
 
 // Введення данних
 INSERT INTO districts(`district_name`) VALUES
@@ -57,12 +62,20 @@ INSERT INTO subjects(`subject_name`) VALUES
   ('Фізика й астрономія'),
   ('Фізична культура'),
   ('Хімія');
-INSERT INTO info (`name`, `email`, `category`, `subject`, `district`, `locality`, `institution`, `student_name`, `student_number`) VALUES
-('a a a', 'a@gmail.com', 1, 5, 1, 'aaa', 'AAA', 'Aa, Aa, Aa', '+380339886745'),
-('b b b', 'b@gmail.com', 2, 7, 2, 'bbb', 'BBB', 'Bb, Bb, Bb', '+380955474560'),
-('c c c', 'c@gmail.com', 3, 3, 3, 'ccc', 'CCC', 'Cc, Cc, Cc', '+380236012478'),
-('d d d', 'd@gmail.com', 3, 1, 4, 'ddd', 'DDD', 'Dd, Dd, Dd', '+380125014695'),
-('e e e', 'e@gmail.com', 4, 4, 5, 'eee', 'EEE', 'Ee, Ee, Ee', '+380236598203');
+INSERT INTO students(`student_name`, `student_phnumber`, `teacher_id`) VALUES 
+  ('Aaa Aaa Aaa', '+380957448230', 1),
+  ('Bbb Bbb Bbb', '+380227448541', 2),
+  ('Ccc Ccc Ccc', '+380796887201', 2),
+  ('Ddd Ddd Ddd', '+380236975153', 3),
+  ('Eee Eee Eee', '+380256902236', 4),
+  ('Fff Fff Fff', '+380369521030', 5);
+INSERT INTO info (`name`, `email`, `category`, `subject`, `district`, `locality`, `institution`) VALUES
+('a a a', 'a@gmail.com', 1, 5, 1, 'aaa', 'AAA'),
+('b b b', 'b@gmail.com', 2, 7, 2, 'bbb', 'BBB'),
+('c c c', 'c@gmail.com', 3, 3, 3, 'ccc', 'CCC'),
+('d d d', 'd@gmail.com', 3, 1, 4, 'ddd', 'DDD'),
+('e e e', 'e@gmail.com', 4, 4, 5, 'eee', 'EEE');
+
 
 // Триггери
 DELIMITER $$
@@ -83,5 +96,6 @@ THEN
 END IF;
 $$
 DELIMITER ;
+
 
 // Процедури
