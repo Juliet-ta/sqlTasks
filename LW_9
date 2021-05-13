@@ -24,7 +24,7 @@ SELECT * from booksPublishedInYear(1999)
 //a.	приймати в якості вхідного параметра рядок, що містить список назв видавництв, розділених символом ‘;’;  
 //b.	виділяти з цього рядка назву видавництва;
 //c.	формувати нумерований список назв видавництв.
-CREATE FUNCTION TablePublishers(@publishers VARCHAR(2550))
+CREATE FUNCTION TablePublishers(@publishers NVARCHAR(MAX))
 RETURNS TABLE AS
 RETURN (SELECT ROW_NUMBER() OVER(ORDER BY value ASC) AS number, value
 			FROM STRING_SPLIT(@publishers,';'), publishers WHERE value LIKE publishers.publishers)
@@ -39,7 +39,7 @@ SELECT * from dbo.publisherList(@string);
 //d.	виконати вибірку даних з курсору;
 //e.	закрити курсор;
 DECLARE 
-    @book_name VARCHAR(MAX), 
+    @book_name NVARCHAR(MAX), 
     @date  DATETIME;
 DECLARE cursor_get_books CURSOR
 FOR SELECT title, date FROM main, extra WHERE main.code = extra.code;
@@ -48,7 +48,7 @@ FETCH NEXT FROM cursor_get_books INTO @book_name, @date;
 WHILE @@FETCH_STATUS = 0
     BEGIN
 	IF (2000=YEAR(@date))
-		PRINT @book_name + CAST(YEAR(@date) AS VARCHAR(40));
+		PRINT @book_name + CAST(YEAR(@date) AS NVARCHAR(40));
 	FETCH NEXT FROM cursor_get_books INTO @book_name, @date;
     END;
 
