@@ -15,7 +15,8 @@ CREATE TABLE subjects(
 );
 CREATE TABLE students(
     student_name VARCHAR(100) NOT NULL,
-    student_phnumber CHAR(13) NOT NULL UNIQUE,
+    student_class SMALLINT(2) NOT NULL,
+    student_phnumber CHAR(14) NOT NULL UNIQUE,
     teacher_id SMALLINT(4) NOT NULL,
     FOREIGN KEY (`teacher_id`) REFERENCES `info`(`id`)
 );
@@ -62,13 +63,13 @@ INSERT INTO subjects(`subject_name`) VALUES
   ('Фізика й астрономія'),
   ('Фізична культура'),
   ('Хімія');
-INSERT INTO students(`student_name`, `student_phnumber`, `teacher_id`) VALUES 
-  ('Aaa Aaa Aaa', '+380957448230', 1),
-  ('Bbb Bbb Bbb', '+380227448541', 2),
-  ('Ccc Ccc Ccc', '+380796887201', 2),
-  ('Ddd Ddd Ddd', '+380236975153', 3),
-  ('Eee Eee Eee', '+380256902236', 4),
-  ('Fff Fff Fff', '+380369521030', 5);
+INSERT INTO students(`student_name`, `student_class`, `student_phnumber`, `teacher_id`) VALUES 
+  ('Aaa Aaa Aaa', 10, '+380957482301', 1),
+  ('Bbb Bbb Bbb', 11, '+380227448541', 2),
+  ('Ccc Ccc Ccc', 12, '+380796887201', 2),
+  ('Ddd Ddd Ddd', 11, '+380236975153', 3),
+  ('Eee Eee Eee', 11, '+380256902236', 4),
+  ('Fff Fff Fff', 11, '+380369521030', 5);
 INSERT INTO info (`name`, `email`, `category`, `subject`, `district`, `locality`, `institution`) VALUES
 ('a a a', 'a@gmail.com', 1, 5, 1, 'aaa', 'AAA'),
 ('b b b', 'b@gmail.com', 2, 7, 2, 'bbb', 'BBB'),
@@ -97,6 +98,58 @@ END IF;
 $$
 DELIMITER ;
 
+DELIMITER $$
+CREATE TRIGGER stname3_insert BEFORE INSERT ON `students`
+FOR EACH ROW
+IF NEW.student_name NOT LIKE '% % %' OR NEW.student_name LIKE '% % % %'
+THEN
+ SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = "Введіть прізвище, ім'я та по батькові студента";
+END IF;
+$$
+DELIMITER ;
+DELIMITER $$
+CREATE TRIGGER stname3_update BEFORE UPDATE ON `students`
+FOR EACH ROW
+IF NEW.student_name NOT LIKE '% % %' OR NEW.student_name LIKE '% % % %'
+THEN
+ SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = "Введіть прізвище, ім'я та по батькові студента";
+END IF;
+$$
+DELIMITER ;
+
+DELIMITER $$
+CREATE TRIGGER phnumber_insert BEFORE INSERT ON `students`
+FOR EACH ROW
+IF NEW.student_phnumber NOT LIKE '+380_________'
+THEN
+ SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Введіть номер у форматі +380*********';
+END IF;
+$$
+DELIMITER ;
+DELIMITER $$
+CREATE TRIGGER phnumber_update BEFORE UPDATE ON `students`
+FOR EACH ROW
+IF NEW.student_phnumber NOT LIKE '+380_________'
+THEN
+ SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Введіть номер у форматі +380*********';
+END IF;
+$$
+DELIMITER ;
+
 
 // Процедури
-Добавить класс ученика, найти к-во учеников/учителей, емейл учителей, телефоны учеников, триггер для номера телефона
+CREATE PROCEDURE count_teachers()
+SELECT COUNT(id) count_teachers FROM info;
+CALL count_teachers;
+
+CREATE PROCEDURE count_students()
+SELECT COUNT(student_phnumber) count_students FROM students;
+CALL count_students;
+
+CREATE PROCEDURE students_phnumber()
+SELECT student_name, student_phnumber FROM students;
+CALL students_phnumber;
+
+CREATE PROCEDURE teachers_emails()
+SELECT name, email FROM info;
+CALL teachers_emails;
