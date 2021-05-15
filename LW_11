@@ -24,7 +24,7 @@ CREATE TABLE info(
     id SMALLINT(4) PRIMARY KEY AUTO_INCREMENT,
     name VARCHAR(100) NOT NULL,
     email VARCHAR(50) NOT NULL UNIQUE,
-    category SMALLINT(2),
+    category SMALLINT(2) NOT NULL,
     subject SMALLINT(2) NOT NULL,
     district SMALLINT(1) NOT NULL,
     locality VARCHAR(50) NOT NULL,
@@ -153,3 +153,14 @@ CALL students_phnumber;
 CREATE PROCEDURE teachers_emails()
 SELECT name, email FROM info;
 CALL teachers_emails;
+
+DELIMITER $$
+CREATE PROCEDURE insert_value(varname VARCHAR(100), varemail VARCHAR(50), varcategory_name VARCHAR(20), varsubject_name VARCHAR(30), vardistrict_name VARCHAR(50), varlocality VARCHAR(50), varinstitution VARCHAR(70), varstudent_name VARCHAR(100), varstudent_class SMALLINT(2), varstudent_phnumber CHAR(14))
+BEGIN
+	INSERT INTO info(`name`, `email`, `category`, `subject`, `district`, `locality`, `institution`) VALUES(varname, varemail, (SELECT categories.category_id FROM categories WHERE categories.category_name LIKE varcategory_name), (SELECT subjects.subject_id FROM subjects WHERE subjects.subject_name LIKE varsubject_name), (SELECT districts.district_id FROM districts WHERE districts.district_name LIKE vardistrict_name), varlocality, varinstitution);
+    INSERT INTO students(`student_name`, `student_class`, `student_phnumber`, `teacher_id`) VALUES(varstudent_name, varstudent_class, varstudent_phnumber, (SELECT id FROM info WHERE varemail LIKE email));
+	SELECT * FROM info;
+END;
+$$
+DELIMITER ;
+CALL insert_value('Lll Lll Lll', 'L@gmail.com', 'Молодий вчитель', 'Алгебра та геометрія', 'Бериславський район', 'Lllll', 'Lllllll', 'Llll Llll Llll', 11, '+380993225698');
